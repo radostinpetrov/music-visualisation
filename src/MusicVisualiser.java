@@ -3,16 +3,28 @@ import java.util.Arrays;
 public class MusicVisualiser {
     private final String audioFile;
     private final int k;
+    private final Algorithm algorithm;
 
-    public MusicVisualiser(String audioFile, int k) {
+    public MusicVisualiser(String audioFile, int k, Algorithm algorithm) {
         this.audioFile = audioFile;
         this.k = k;
+        this.algorithm = algorithm;
     }
 
-    public void minMax() {
+    public void visualise()
+    {
         StdDraw.setCanvasSize(1000, 100);
         StdDraw.setPenColor(StdDraw.BLUE);
         var signal = StdAudio.read(audioFile);
+        switch(this.algorithm){
+            case MINMAX -> minMax(signal);
+            case FFT -> fftVisualisation(signal);
+            default -> throw new IllegalArgumentException("Unrecognised algorithm to visualise");
+        }
+    }
+
+    public void minMax(double[] signal) {
+        StdDraw.setPenColor(StdDraw.BLUE);
         var sampleGroups = new double[signal.length/k][k];
         StdDraw.setXscale(0, sampleGroups.length);
         StdDraw.setYscale(-1, 1);
@@ -33,12 +45,10 @@ public class MusicVisualiser {
         StdDraw.clear();
     }
 
-    public void fftVisualisation() {
+    public void fftVisualisation(double[] signal) {
         StdDraw.setCanvasSize(1000, 100);
         StdDraw.setXscale(0, k/2);   // show half spectrum (Nyquist limit)
         StdDraw.setYscale(0, 100);   // scale depends on magnitude
-
-        var signal = StdAudio.read(audioFile);
 
         for (int i = 0; i < signal.length / k; i++) {
             double[] frame = Arrays.copyOfRange(signal, i * k, (i + 1) * k);
@@ -62,14 +72,5 @@ public class MusicVisualiser {
             StdDraw.show();
             StdDraw.clear();
         }
-    }
-
-    public static void main(String[] args) {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("Expected two arguments for the program: <audio file name>, " +
-                    "<k - number of groups");
-        }
-        var musicVisualiser = new MusicVisualiser(args[0], Integer.parseInt(args[1]));
-        musicVisualiser.fftVisualisation();
     }
 }
