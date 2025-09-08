@@ -46,7 +46,6 @@ public class MusicVisualiser {
     }
 
     public void fftVisualisation(double[] signal) {
-        StdDraw.setCanvasSize(1000, 100);
         StdDraw.setXscale(0, k/2);   // show half spectrum (Nyquist limit)
         StdDraw.setYscale(0, 100);   // scale depends on magnitude
 
